@@ -1,0 +1,30 @@
+# Maintainer: Weilin Cai <weilin_cai.king@yahoo.com>
+
+pkgname=linuxqq
+pkgver=2.0.0_b2_1082
+pkgrel=1
+pkgdesc="Tencent QQ for Linux"
+arch=('aarch64')
+url="https://im.qq.com/linuxqq"
+license=('unknown')
+depends=('gtk2' 'glibc' 'gcc-libs' 'nss')
+optdepends=('tint2')
+provides=('linuxqq')
+conflicts=('linuxqq')
+source=("http://down.qq.com/qqweb/LinuxQQ_1/linuxqq_2.0.0-b2-1082_arm64.sh")
+sha512sums=('c89ebb69514582c56977f8fe19d1f2bd5239cb539bb9d044b304d03e3515e7be3a0e8ba598c9b786442f11c9a7b1707f046ab64abef8df6f13cc8536c29c0fa3')
+
+file="linuxqq_2.0.0-b2-1082_arm64.sh"
+
+prepare() {
+	cd $srcdir
+	lines=33
+	tail -n+$lines $file > linuxqq.tar.gz
+}
+
+package() {
+	cd $srcdir
+	tar zxf linuxqq.tar.gz
+	cd "linuxqq"
+	cp -r ./* $pkgdir/
+}
