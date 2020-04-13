@@ -1,6 +1,6 @@
 # Maintainer: Weilin Cai <weilin_cai.king@yahoo.com>
 
-pkgname=linuxqq
+pkgname=qq-linux
 pkgver=2.0.0_b2_1082
 pkgrel=1
 pkgdesc="Tencent QQ for Linux"
@@ -11,20 +11,33 @@ depends=('gtk2' 'glibc' 'gcc-libs' 'nss')
 optdepends=('tint2')
 provides=('linuxqq')
 conflicts=('linuxqq')
-source=("http://down.qq.com/qqweb/LinuxQQ_1/linuxqq_2.0.0-b2-1082_arm64.sh")
-sha512sums=('c89ebb69514582c56977f8fe19d1f2bd5239cb539bb9d044b304d03e3515e7be3a0e8ba598c9b786442f11c9a7b1707f046ab64abef8df6f13cc8536c29c0fa3')
+source=(
+	"$pkgname-$pkgver-$pkgrel.sh::http://down.qq.com/qqweb/LinuxQQ_1/linuxqq_2.0.0-b2-1082_arm64.sh"
+	"qq.desktop"
+)
+sha512sums=(
+	'c89ebb69514582c56977f8fe19d1f2bd5239cb539bb9d044b304d03e3515e7be3a0e8ba598c9b786442f11c9a7b1707f046ab64abef8df6f13cc8536c29c0fa3'
+	'df2a1054dacad59eda7d5e43fa74684fb21937eea9bb0478944e6cf434793272a0568e547afe5b207a55730b38f01665430d1f34a147207bfdeb86492ab05803'
+)
 
-file="linuxqq_2.0.0-b2-1082_arm64.sh"
+file="$pkgname-$pkgver-$pkgrel.sh"
 
 prepare() {
 	cd $srcdir
 	lines=33
 	tail -n+$lines $file > linuxqq.tar.gz
+	tar zxf linuxqq.tar.gz
 }
 
 package() {
-	cd $srcdir
-	tar zxf linuxqq.tar.gz
-	cd "linuxqq"
-	cp -r ./* $pkgdir/
+	cd "$srcdir/linuxqq"
+	mkdir -p "$pkgdir/opt/tencent-qq"
+	cp -pr "$srcdir/linuxqq/usr/local/bin/"* "$pkgdir/opt/tencent-qq/"
+	cp -pr "$srcdir/linuxqq/usr/local/share/tencent-qq/"* "$pkgdir/opt/tencent-qq/"
+
+	mkdir -p "$pkgdir/usr/bin"
+	ln -s ../../opt/tencent-qq/qq "$pkgdir/usr/bin/linuxqq"
+
+	install -Dm644 "$pkgdir/opt/tencent-qq/qq.png" "$pkgdir/usr/share/icons/hicolor/48x48/apps/qq.png"
+	install -Dm644 "$srcdir/qq.desktop" "$pkgdir/usr/share/applications/qq.desktop"
 }
